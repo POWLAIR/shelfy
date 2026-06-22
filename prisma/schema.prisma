@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MediaType {
+  MANGA
+  ROMAN
+  AUDIO
+}
+
+enum ReadingStatus {
+  A_LIRE
+  EN_COURS
+  TERMINE
+  STAND_BY
+}
+
+model Oeuvre {
+  id            String        @id @default(cuid())
+  titre         String
+  mediaType     MediaType
+  couvertureUrl String?
+  statut        ReadingStatus @default(A_LIRE)
+  progression   String?
+  tags          String[]
+  sources       Source[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Source {
+  id        String   @id @default(cuid())
+  nom       String
+  url       String
+  active    Boolean  @default(false)
+  note      String?
+  oeuvre    Oeuvre   @relation(fields: [oeuvreId], references: [id], onDelete: Cascade)
+  oeuvreId  String
+  createdAt DateTime @default(now())
+}
